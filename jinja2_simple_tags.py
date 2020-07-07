@@ -5,16 +5,23 @@ __all__ = ['ContainerTag', 'StandaloneTag']
 
 
 class BaseTemplateTag(Extension):
+    takes_context = False
+
     def __init__(self, environment):
         super().__init__(environment)
         self.template = None
         self.lineno = None
         self.tag_name = None
+        self.context = None
 
     def parse(self, parser):
         self.init_parser(parser)
         args, kwargs, target = self.parse_args(parser)
-        block_call = self.call_method('render', args, kwargs)
+        if self.takes_context:
+            kwargs.append(
+                nodes.Keyword('context_object', nodes.ContextReference())
+            )
+        block_call = self.call_method('render_wrapper', args, kwargs)
         return self.output(parser, block_call, target)
 
     def init_parser(self, parser):
@@ -62,6 +69,10 @@ class BaseTemplateTag(Extension):
 
     def output(self, parser, block_call, target):
         raise NotImplementedError
+
+    def render_wrapper(self, *args, **kwargs):
+        self.context = kwargs.pop('context_object', None)
+        return self.render(*args, **kwargs)
 
     def render(self, *args, **kwargs):
         raise NotImplementedError
