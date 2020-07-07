@@ -92,7 +92,6 @@ class ContainerTag(BaseTemplateTag):
         body = parser.parse_statements(['name:end%s' % self.tag_name], drop_needle=True)
         call_block = nodes.CallBlock(block_call, [], [], body).set_lineno(self.lineno)
         if target:
-            filter_node = parser.parse_filter(None)
             target_node = nodes.Name(target, 'store', lineno=self.lineno)
-            return nodes.AssignBlock(target_node, filter_node, [call_block], lineno=self.lineno)
+            return nodes.AssignBlock(target_node, None, [call_block], lineno=self.lineno)
         return call_block
