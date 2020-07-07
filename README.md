@@ -1,5 +1,5 @@
 # jinja2-simple-tags
-A simple interface that allows processing images.
+Base classes for quick-and-easy development of template tags
 
 ## Installation
 `pip install jinja2-simple-tags`
