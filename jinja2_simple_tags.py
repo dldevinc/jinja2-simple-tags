@@ -5,22 +5,18 @@ __all__ = ['ContainerTag', 'StandaloneTag']
 
 
 class BaseTemplateTag(Extension):
-    takes_context = False
-
     def __init__(self, environment):
         super().__init__(environment)
         self.template = None
         self.lineno = None
         self.tag_name = None
-        self.context = None
 
     def parse(self, parser):
         self.init_parser(parser)
         args, kwargs, target = self.parse_args(parser)
-        if self.takes_context:
-            kwargs.append(
-                nodes.Keyword('context_object', nodes.ContextReference())
-            )
+        kwargs.append(
+            nodes.Keyword('context_object', nodes.ContextReference())
+        )
         block_call = self.call_method('render_wrapper', args, kwargs)
         return self.output(parser, block_call, target)
 

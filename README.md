@@ -6,7 +6,7 @@ Base classes for quick-and-easy development of template tags
 
 ## Examples
 
-### StandaloneTag
+### `StandaloneTag`
 ```python
 from django.utils.timezone import now
 from django.utils.formats import date_format
@@ -27,7 +27,7 @@ Usage:
 ```
 
 
-### ContainerTag
+### `ContainerTag`
 ```python
 from django.core.cache import cache
 from django.utils.encoding import force_str
@@ -58,6 +58,23 @@ Usage:
     ...
   </footer>
 {% endcache %}
+```
+
+### Context
+Current context is available through the `self.context`.
+
+```python
+from django.urls import reverse
+from jinja2_simple_tags import StandaloneTag
+
+
+class AbsoluteURITag(StandaloneTag):
+    tags = {'absolute_uri'}
+
+    def render(self, name):
+        request = self.context['request']
+        url = reverse(name)        
+        return request.build_absolute_uri(url)
 ```
 
 ### Assignment
