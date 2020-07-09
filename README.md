@@ -1,5 +1,5 @@
 # jinja2-simple-tags
-Base classes for quick-and-easy development of template tags
+Base classes for quick-and-easy template tag development
 
 ## Installation
 `pip install jinja2-simple-tags`
