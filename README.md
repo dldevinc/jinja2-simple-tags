@@ -99,16 +99,14 @@ Usage:
 ```
 
 ## Development and Testing
-After cloning the Git repository, you should install this 
+After cloning the Git repository, you should install this
 in a virtualenv and set up for development:
 ```shell script
 virtualenv .venv
 source .venv/bin/activate
-pip install -e .[dev]
+pip install -r ./requirements_dev.txt
 ```
 Then, you can run tests:
 ```shell script
 pytest
-# or
-tox -e py38-jinja211
 ```

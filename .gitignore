@@ -3,11 +3,15 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# C extensions
+*.so
+
 # Distribution / packaging
 .Python
+env/
 build/
 develop-eggs/
-/dist/
+dist/
 downloads/
 eggs/
 .eggs/
@@ -20,7 +24,12 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
 
 # Installer logs
 pip-log.txt
@@ -42,14 +51,59 @@ coverage.xml
 *.mo
 *.pot
 
-# PyCharm
-/.idea
+# Django stuff:
+*.log
+local_settings.py
 
-# Environments
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+
+# SageMath parsed files
+*.sage.py
+
+# dotenv
 .env
+
+# virtualenv
 .venv
-env/
 venv/
+ENV/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
 
 # mypy
 .mypy_cache/
+
+# IDE settings
+.idea/
+.vscode/
+
+# tests
+tests/db.sqlite3
