@@ -97,3 +97,18 @@ Usage:
 ...
 {{ footer }}
 ```
+
+## Development and Testing
+After cloning the Git repository, you should install this 
+in a virtualenv and set up for development:
+```shell script
+virtualenv .venv
+source .venv/bin/activate
+pip install -e .[dev]
+```
+Then, you can run tests:
+```shell script
+pytest
+# or
+tox -e py38-jinja211
+```
