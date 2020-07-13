@@ -1,6 +1,8 @@
 # jinja2-simple-tags
 Base classes for quick-and-easy template tag development
 
+![](https://travis-ci.org/dldevinc/jinja2-simple-tags.svg?branch=master)
+
 ## Installation
 `pip install jinja2-simple-tags`
 
@@ -73,12 +75,12 @@ class AbsoluteURITag(StandaloneTag):
 
     def render(self, name):
         request = self.context['request']
-        url = reverse(name)        
+        url = reverse(name)
         return request.build_absolute_uri(url)
 ```
 
 ### Assignment
-Both `StandaloneTag` and `ContainerTag` comes with out-of-the-box 
+Both `StandaloneTag` and `ContainerTag` comes with out-of-the-box
 support for assignment.
 
 Usage:
@@ -105,8 +107,5 @@ in a virtualenv and set up for development:
 virtualenv .venv
 source .venv/bin/activate
 pip install -r ./requirements_dev.txt
-```
-Then, you can run tests:
-```shell script
-pytest
+pre-commit install
 ```
