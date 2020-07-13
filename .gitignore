@@ -104,6 +104,3 @@ ENV/
 # IDE settings
 .idea/
 .vscode/
-
-# tests
-tests/db.sqlite3
