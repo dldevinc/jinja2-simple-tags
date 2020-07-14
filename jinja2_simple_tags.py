@@ -2,7 +2,7 @@ from jinja2 import nodes
 from jinja2.ext import Extension
 
 __all__ = ['StandaloneTag', 'ContainerTag']
-__version__ = '0.2.3'
+__version__ = '0.3.0'
 
 
 class BaseTemplateTag(Extension):
@@ -13,16 +13,21 @@ class BaseTemplateTag(Extension):
         self.tag_name = None
 
     def parse(self, parser):
+        lineno = parser.stream.current.lineno
+        tag_name = parser.stream.current.value
+        additional_params = [
+            nodes.Keyword('_context', nodes.ContextReference()),
+            nodes.Keyword('_template', nodes.Const(parser.name)),
+            nodes.Keyword('_lineno', nodes.Const(lineno)),
+            nodes.Keyword('_tag_name', nodes.Const(tag_name)),
+        ]
         self.init_parser(parser)
         args, kwargs, target = self.parse_args(parser)
-        kwargs.append(nodes.Keyword('context_object', nodes.ContextReference()))
+        kwargs.extend(additional_params)
         block_call = self.call_method('render_wrapper', args, kwargs)
-        return self.output(parser, block_call, target)
+        return self.output(parser, block_call, target, tag_name=tag_name, lineno=lineno)
 
     def init_parser(self, parser):
-        self.template = parser.name
-        self.lineno = parser.stream.current.lineno
-        self.tag_name = parser.stream.current.value
         parser.stream.skip(1)  # skip tag name
 
     def parse_args(self, parser):
@@ -61,11 +66,14 @@ class BaseTemplateTag(Extension):
 
         return args, kwargs, target
 
-    def output(self, parser, block_call, target):
+    def output(self, parser, block_call, target, tag_name, lineno):
         raise NotImplementedError
 
     def render_wrapper(self, *args, **kwargs):
-        self.context = kwargs.pop('context_object', None)
+        self.context = kwargs.pop('_context', None)
+        self.template = kwargs.pop('_template', None)
+        self.lineno = kwargs.pop('_lineno', None)
+        self.tag_name = kwargs.pop('_tag_name', None)
         return self.render(*args, **kwargs)
 
     def render(self, *args, **kwargs):
@@ -73,21 +81,19 @@ class BaseTemplateTag(Extension):
 
 
 class StandaloneTag(BaseTemplateTag):
-    def output(self, parser, block_call, target):
+    def output(self, parser, block_call, target, tag_name, lineno):
         if target:
-            target_node = nodes.Name(target, 'store', lineno=self.lineno)
-            return nodes.Assign(target_node, block_call, lineno=self.lineno)
-        call = nodes.MarkSafe(block_call, lineno=self.lineno)
-        return nodes.Output([call], lineno=self.lineno)
+            target_node = nodes.Name(target, 'store', lineno=lineno)
+            return nodes.Assign(target_node, block_call, lineno=lineno)
+        call = nodes.MarkSafe(block_call, lineno=lineno)
+        return nodes.Output([call], lineno=lineno)
 
 
 class ContainerTag(BaseTemplateTag):
-    def output(self, parser, block_call, target):
-        body = parser.parse_statements(['name:end%s' % self.tag_name], drop_needle=True)
-        call_block = nodes.CallBlock(block_call, [], [], body).set_lineno(self.lineno)
+    def output(self, parser, block_call, target, tag_name, lineno):
+        body = parser.parse_statements(['name:end%s' % tag_name], drop_needle=True)
+        call_block = nodes.CallBlock(block_call, [], [], body).set_lineno(lineno)
         if target:
-            target_node = nodes.Name(target, 'store', lineno=self.lineno)
-            return nodes.AssignBlock(
-                target_node, None, [call_block], lineno=self.lineno
-            )
+            target_node = nodes.Name(target, 'store', lineno=lineno)
+            return nodes.AssignBlock(target_node, None, [call_block], lineno=lineno)
         return call_block
