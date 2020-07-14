@@ -2,7 +2,7 @@ from jinja2 import nodes
 from jinja2.ext import Extension
 
 __all__ = ['StandaloneTag', 'ContainerTag']
-__version__ = '0.2.3'
+__version__ = '0.3.0'
 
 
 class BaseTemplateTag(Extension):
