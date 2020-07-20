@@ -26,3 +26,8 @@ repos:
         additional_dependencies:
           - flake8-isort
           - pep8-naming
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.782
+    hooks:
+      - id: mypy
