@@ -1,7 +1,8 @@
 # jinja2-simple-tags
 Base classes for quick-and-easy template tag development
 
-![](https://travis-ci.org/dldevinc/jinja2-simple-tags.svg?branch=master)
+[![PyPI](https://img.shields.io/pypi/v/jinja2-simple-tags.svg)](https://pypi.org/project/jinja2-simple-tags/)
+[![Build Status](https://travis-ci.org/dldevinc/jinja2-simple-tags.svg?branch=master)](https://travis-ci.org/dldevinc/jinja2-simple-tags)
 
 ## Installation
 `pip install jinja2-simple-tags`
