@@ -1,5 +1,4 @@
 import hashlib
-from django.utils.encoding import force_bytes
 from jinja2 import Environment
 from jinja2_simple_tags import ContainerTag
 
@@ -11,9 +10,9 @@ class HashTag(ContainerTag):
         if algorithm not in hashlib.algorithms_available:
             raise ValueError('unknown algorithm: {}'.format(algorithm))
 
-        content = force_bytes(caller())
+        content = str(caller())
         hasher = getattr(hashlib, algorithm)()
-        hasher.update(content)
+        hasher.update(content.encode())
         return hasher.hexdigest()
 
 

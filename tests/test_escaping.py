@@ -1,4 +1,3 @@
-from django.utils.encoding import force_str
 from jinja2 import Environment
 from jinja2_simple_tags import StandaloneTag, ContainerTag
 
@@ -15,7 +14,7 @@ class TrimContainer(ContainerTag):
 
     def render(self, caller=None):
         content = caller()
-        return force_str(content).strip()
+        return str(content).strip()
 
 
 class TestNoEscape:
