@@ -2,7 +2,11 @@
 Base classes for quick-and-easy template tag development
 
 [![PyPI](https://img.shields.io/pypi/v/jinja2-simple-tags.svg)](https://pypi.org/project/jinja2-simple-tags/)
-[![Build Status](https://travis-ci.org/dldevinc/jinja2-simple-tags.svg?branch=master)](https://travis-ci.org/dldevinc/jinja2-simple-tags)
+[![Build Status](https://travis-ci.com/dldevinc/jinja2-simple-tags.svg?branch=master)](https://travis-ci.org/dldevinc/jinja2-simple-tags)
+
+## Compatibility
+* `python` >= 3.5
+* `Jinja2` >= 2.10
 
 ## Installation
 `pip install jinja2-simple-tags`
@@ -99,14 +103,4 @@ Usage:
 {% endcache %}
 ...
 {{ footer }}
-```
-
-## Development and Testing
-After cloning the Git repository, you should install this
-in a virtualenv and set up for development:
-```shell script
-virtualenv .venv
-source .venv/bin/activate
-pip install -r ./requirements_dev.txt
-pre-commit install
 ```
