@@ -1,5 +1,7 @@
 import hashlib
+
 from jinja2 import Environment
+
 from jinja2_simple_tags import ContainerTag
 
 

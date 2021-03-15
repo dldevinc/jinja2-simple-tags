@@ -1,5 +1,6 @@
 from jinja2 import Environment
-from jinja2_simple_tags import StandaloneTag, ContainerTag
+
+from jinja2_simple_tags import ContainerTag, StandaloneTag
 
 
 class StringTag(StandaloneTag):

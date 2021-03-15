@@ -1,15 +1,14 @@
 language: python
 python:
+- 3.9
 - 3.8
 - 3.7
 - 3.6
+- 3.5
 
 before_install:
-- pip install twine
 - pip install -U pip setuptools wheel tox-travis
-
-install:
-- pip install -r ./requirements_dev.txt
+- pip install twine
 
 branches:
   only:
@@ -26,6 +25,7 @@ deploy:
   provider: pypi
   distributions: sdist bdist_wheel
   skip_existing: true
+  skip_cleanup: true
   user: __token__
   password:
     secure: crMTOuwhZyrJEPJbLzIwBodkMQJJ6tyuxnkH/pXP+Ok/H7H3P+rwh3lATazqKpasP/1EjZEzPP7IByAZ1yAporoFh6+MDCLJZw41S8S8ANB+8q+i4o2s0+S3GCXiWwo3RyiOLGCoSKXK+wK7SEdh6goZO6SJX90rrFhr/2O3r3UUHZ0kHIC1qWSsZQ9URjwiukZEwHCr2FRSlaPKgokr5tOnJwD7HRwuCV6+w1Adus7Vx1UWSJFsVYKAwYRQQodavJIAkiICfyBGIsuZ8uH/xEZxJqMIxY3mWmqoOZAZI18XPuBVRQFnlt//9Xh1osFFG/kynZLE+TaTZsYom3w6SssQHefEM2bSkRHfWr6GmAvxnoDCJakE3Fx/GScpP016lwT5VRaZW7RzWCBtRPHEQM585IdPU7ivXqTEjTe3MtNlD3IZuo+qrfq7HxYa5wS15AMrTsDLnw4c/0taoJuWxaJL3PDEDxmsEvackEEryIRyzomS8TNG4PH6kGDaPDe1vTfd37jT9sZJw0WluFDszeLKmYy9GVK3btvuBssGswctKMPSZZqxs62UOXF5gwynC2ZYvnDVB3Q+q8uawvRQehZnizW3iU8X+mFBKx54dgGcUTXSj36zmcrWYLJAAsZOKkpSn92dSa3OXi6cIfsMsMyiWnck6M0cBqnqeyNSdOk=

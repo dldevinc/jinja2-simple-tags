@@ -1,5 +1,6 @@
-pytest==5.4.3
+pytest==6.1.2
 pytest-env==0.6.2
-pytest-cov==2.10.0
+pytest-cov==2.11.1
 pytest-pythonpath==0.7.3
-pytest-xdist==1.33.0
+pytest-tldr==0.2.2
+pytest-xdist==2.2.1
