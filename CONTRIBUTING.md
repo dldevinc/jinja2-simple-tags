@@ -19,7 +19,7 @@
     ```
 1. Install dependencies as well as a local editable copy of the library
     ```shell
-    pip install -r ./requirements_dev.txt
+    pip install -r ./requirements.txt
     pip install -e .
     ```
 
