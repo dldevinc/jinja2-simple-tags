@@ -1,0 +1,6 @@
+pytest==7.0.1; python_version == '3.6'
+pytest==7.1.2; python_version >= '3.7'
+pytest-env==0.6.2
+pytest-cov==3.0.0
+pytest-tldr==0.2.4
+pytest-xdist==2.5.0
