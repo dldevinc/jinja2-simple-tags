@@ -5,7 +5,7 @@ Base classes for quick-and-easy template tag development
 [![Build Status](https://travis-ci.com/dldevinc/jinja2-simple-tags.svg?branch=master)](https://travis-ci.org/dldevinc/jinja2-simple-tags)
 
 ## Compatibility
-* `python` >= 3.5
+* `python` >= 3.6
 * `Jinja2` >= 2.10
 
 ## Installation
