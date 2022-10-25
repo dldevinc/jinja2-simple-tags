@@ -1,7 +1,6 @@
 include LICENSE
-include README.md
-include CHANGELOG.md
+include *.md
 
-recursive-exclude tests *
-recursive-exclude * __pycache__
-recursive-exclude * *.py[co]
+global-exclude .git*
+global-exclude __pycache__
+global-exclude *.py[co]
