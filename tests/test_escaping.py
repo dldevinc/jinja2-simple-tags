@@ -19,7 +19,7 @@ class TrimContainer(ContainerTag):
 
 
 class TestNoEscape:
-    def setup(self):
+    def setup_method(self):
         self.env = Environment(extensions=[StringTag, TrimContainer], autoescape=False)
 
     def test_standalone(self):
@@ -32,7 +32,7 @@ class TestNoEscape:
 
 
 class TestAutoEscape:
-    def setup(self):
+    def setup_method(self):
         self.env = Environment(extensions=[StringTag, TrimContainer], autoescape=True)
 
     def test_standalone(self):
