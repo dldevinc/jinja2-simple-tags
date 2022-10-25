@@ -19,7 +19,7 @@ class HashTag(ContainerTag):
 
 
 class TestStringOutput:
-    def setup(self):
+    def setup_method(self):
         self.env = Environment(extensions=[HashTag], autoescape=True)
 
     def test_container(self):

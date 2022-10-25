@@ -14,7 +14,7 @@ class NowTag(StandaloneTag):
 
 
 class TestStandaloneTag:
-    def setup(self):
+    def setup_method(self):
         self.env = Environment(extensions=[NowTag])
 
     def test_tag(self):

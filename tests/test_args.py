@@ -14,7 +14,7 @@ class DateTag(StandaloneTag):
 
 
 class TestArguments:
-    def setup(self):
+    def setup_method(self):
         self.env = Environment(extensions=[DateTag], autoescape=True)
 
     def test_default_arguments(self):

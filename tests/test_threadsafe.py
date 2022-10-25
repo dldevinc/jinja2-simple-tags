@@ -11,7 +11,7 @@ class LineNoTag(StandaloneTag):
 
 
 class TestThreadSafe:
-    def setup(self):
+    def setup_method(self):
         self.env = Environment(extensions=[LineNoTag], autoescape=True)
 
     def test_state(self):

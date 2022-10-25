@@ -11,7 +11,7 @@ class VariableTag(StandaloneTag):
 
 
 class TestContext:
-    def setup(self):
+    def setup_method(self):
         self.env = Environment(extensions=[VariableTag])
 
     def test_existing_variable(self):
