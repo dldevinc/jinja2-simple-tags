@@ -1,19 +1,23 @@
 # jinja2-simple-tags
+
 Base classes for quick-and-easy template tag development
 
 [![PyPI](https://img.shields.io/pypi/v/jinja2-simple-tags.svg)](https://pypi.org/project/jinja2-simple-tags/)
 [![Build Status](https://travis-ci.com/dldevinc/jinja2-simple-tags.svg?branch=master)](https://travis-ci.org/dldevinc/jinja2-simple-tags)
 
 ## Compatibility
-* `python` >= 3.6
-* `Jinja2` >= 2.10
+
+-   `python` >= 3.6
+-   `Jinja2` >= 2.10
 
 ## Installation
+
 `pip install jinja2-simple-tags`
 
 ## Examples
 
 ### `StandaloneTag`
+
 ```python
 from django.utils.timezone import now
 from django.utils.formats import date_format
@@ -28,13 +32,14 @@ class NowExtension(StandaloneTag):
 ```
 
 Usage:
+
 ```jinja2
 {% now %}           {# 7th July 2020, 10:07 a.m. #}
 {% now "Y-m-d" %}   {# 2020-07-07 #}
 ```
 
-
 ### `ContainerTag`
+
 ```python
 from django.core.cache import cache
 from django.utils.encoding import force_str
@@ -59,6 +64,7 @@ class CacheExtension(ContainerTag):
 ```
 
 Usage:
+
 ```jinja2
 {% cache "footer", request.path, timeout=3600 %}
   <footer>
@@ -68,6 +74,7 @@ Usage:
 ```
 
 ### Context
+
 Current context is available through the `self.context`.
 
 ```python
@@ -85,10 +92,12 @@ class AbsoluteURITag(StandaloneTag):
 ```
 
 ### Assignment
+
 Both `StandaloneTag` and `ContainerTag` comes with out-of-the-box
 support for assignment.
 
 Usage:
+
 ```jinja2
 {% now "Y-m-d" as today %}
 ...
