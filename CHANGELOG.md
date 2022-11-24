@@ -2,6 +2,7 @@
 
 ## [0.4.1](https://github.com/dldevinc/jinja2-simple-tags/tree/v0.4.1) - 2022-11-28
 
+-   Add Python 3.11 support (no code changes were needed, but now we test this release).
 -   Support for trailing comma in tag arguments.
 
 ## [0.4.0](https://github.com/dldevinc/jinja2-simple-tags/tree/v0.4.0) - 2022-05-28
