@@ -24,8 +24,8 @@ class BaseTemplateTag(Extension):
         self.init_parser(parser)
         args, kwargs, target = self.parse_args(parser)
         kwargs.extend(additional_params)
-        block_call = self.call_method('render_wrapper', args, kwargs)
-        return self.output(parser, block_call, target, tag_name=tag_name, lineno=lineno)
+        call_node = self.call_method('render_wrapper', args, kwargs)
+        return self.output(parser, call_node, target, tag_name=tag_name, lineno=lineno)
 
     def init_parser(self, parser):
         parser.stream.skip(1)  # skip tag name
@@ -70,7 +70,7 @@ class BaseTemplateTag(Extension):
 
         return args, kwargs, target
 
-    def output(self, parser, block_call, target, tag_name, lineno):
+    def output(self, parser, call_node, target, tag_name, lineno):
         raise NotImplementedError
 
     def render_wrapper(self, *args, **kwargs):
@@ -85,18 +85,18 @@ class BaseTemplateTag(Extension):
 
 
 class StandaloneTag(BaseTemplateTag):
-    def output(self, parser, block_call, target, tag_name, lineno):
+    def output(self, parser, call_node, target, tag_name, lineno):
         if target:
             target_node = nodes.Name(target, 'store', lineno=lineno)
-            return nodes.Assign(target_node, block_call, lineno=lineno)
-        call = nodes.MarkSafe(block_call, lineno=lineno)
+            return nodes.Assign(target_node, call_node, lineno=lineno)
+        call = nodes.MarkSafe(call_node, lineno=lineno)
         return nodes.Output([call], lineno=lineno)
 
 
 class ContainerTag(BaseTemplateTag):
-    def output(self, parser, block_call, target, tag_name, lineno):
+    def output(self, parser, call_node, target, tag_name, lineno):
         body = parser.parse_statements(['name:end%s' % tag_name], drop_needle=True)
-        call_block = nodes.CallBlock(block_call, [], [], body).set_lineno(lineno)
+        call_block = nodes.CallBlock(call_node, [], [], body).set_lineno(lineno)
         if target:
             target_node = nodes.Name(target, 'store', lineno=lineno)
             return nodes.AssignBlock(target_node, None, [call_block], lineno=lineno)
