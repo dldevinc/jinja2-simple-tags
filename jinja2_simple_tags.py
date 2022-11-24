@@ -49,6 +49,10 @@ class BaseTemplateTag(Extension):
             if require_comma:
                 parser.stream.expect('comma')
 
+                # support for trailing comma
+                if parser.stream.current.type == 'block_end':
+                    break
+
             if (
                 parser.stream.current.type == 'name'
                 and parser.stream.look().type == 'assign'

@@ -28,3 +28,7 @@ class TestArguments:
     def test_explicit_kwargs(self):
         template = self.env.from_string('{% now "%d %B %Y", year=2008, month=4 %}')
         assert template.render({}) == '08 April 2008'
+
+    def test_trailing_comma(self):
+        template = self.env.from_string('{% now "%d %B %Y", year=2008, month=4, %}')
+        assert template.render({}) == '08 April 2008'
