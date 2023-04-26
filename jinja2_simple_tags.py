@@ -1,3 +1,5 @@
+import warnings
+
 from jinja2 import nodes
 from jinja2.ext import Extension
 
@@ -24,8 +26,18 @@ class BaseTemplateTag(Extension):
         self.init_parser(parser)
         args, kwargs, target = self.parse_args(parser)
         kwargs.extend(additional_params)
-        call_node = self.call_method('render_wrapper', args, kwargs)
-        return self.output(parser, call_node, target, tag_name=tag_name, lineno=lineno)
+
+        if hasattr(self, "output") and callable(self.output):
+            warnings.warn(
+                'The \'output\' method of the \'BaseTemplateTag\' class is deprecated '
+                'and will be removed in a future version. Please use the \'create_node\' '
+                'method instead.',
+                DeprecationWarning
+            )
+            call_node = self.call_method('render_wrapper', args, kwargs)
+            return self.output(parser, call_node, target, tag_name=tag_name, lineno=lineno)
+
+        return self.create_node(parser, args, kwargs, target, tag_name=tag_name, lineno=lineno)
 
     def init_parser(self, parser):
         parser.stream.skip(1)  # skip tag name
@@ -70,7 +82,7 @@ class BaseTemplateTag(Extension):
 
         return args, kwargs, target
 
-    def output(self, parser, call_node, target, tag_name, lineno):
+    def create_node(self, parser, args, kwargs, target, tag_name, lineno):
         raise NotImplementedError
 
     def render_wrapper(self, *args, **kwargs):
@@ -85,7 +97,8 @@ class BaseTemplateTag(Extension):
 
 
 class StandaloneTag(BaseTemplateTag):
-    def output(self, parser, call_node, target, tag_name, lineno):
+    def create_node(self, parser, args, kwargs, target, tag_name, lineno):
+        call_node = self.call_method('render_wrapper', args, kwargs)
         if target:
             target_node = nodes.Name(target, 'store', lineno=lineno)
             return nodes.Assign(target_node, call_node, lineno=lineno)
@@ -94,7 +107,8 @@ class StandaloneTag(BaseTemplateTag):
 
 
 class ContainerTag(BaseTemplateTag):
-    def output(self, parser, call_node, target, tag_name, lineno):
+    def create_node(self, parser, args, kwargs, target, tag_name, lineno):
+        call_node = self.call_method('render_wrapper', args, kwargs)
         body = parser.parse_statements(['name:end%s' % tag_name], drop_needle=True)
         call_block = nodes.CallBlock(call_node, [], [], body).set_lineno(lineno)
         if target:
