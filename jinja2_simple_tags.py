@@ -1,6 +1,7 @@
 import warnings
 
 from jinja2 import nodes
+from jinja2.lexer import describe_token
 from jinja2.ext import Extension
 
 __all__ = ['StandaloneTag', 'ContainerTag']
@@ -37,7 +38,14 @@ class BaseTemplateTag(Extension):
             call_node = self.call_method('render_wrapper', args, kwargs, lineno=lineno)
             return self.output(parser, call_node, target, tag_name=tag_name, lineno=lineno)
 
-        return self.create_node(parser, args, kwargs, target, tag_name=tag_name, lineno=lineno)
+        return self.create_node(
+            parser,
+            args,
+            kwargs,
+            target=target,
+            tag_name=tag_name,
+            lineno=lineno
+        )
 
     def init_parser(self, parser):
         parser.stream.skip(1)  # skip tag name
@@ -46,15 +54,22 @@ class BaseTemplateTag(Extension):
         args = []
         kwargs = []
         require_comma = False
+        arguments_finished = False
         target = None
 
         while parser.stream.current.type != 'block_end':
             if parser.stream.current.test('name:as'):
                 parser.stream.skip(1)
                 target = parser.stream.expect('name').value
-                if parser.stream.current.type != 'block_end':
+                arguments_finished = True
+
+            if arguments_finished:
+                if not parser.stream.current.test('block_end'):
                     parser.fail(
-                        'Invalid assignment target', parser.stream.current.lineno
+                        'expected token \'block_end\', got {!r}'.format(
+                            describe_token(parser.stream.current)
+                        ),
+                        parser.stream.current.lineno
                     )
                 break
 
