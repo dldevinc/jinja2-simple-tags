@@ -34,7 +34,7 @@ class BaseTemplateTag(Extension):
                 'method instead.',
                 DeprecationWarning
             )
-            call_node = self.call_method('render_wrapper', args, kwargs)
+            call_node = self.call_method('render_wrapper', args, kwargs, lineno=lineno)
             return self.output(parser, call_node, target, tag_name=tag_name, lineno=lineno)
 
         return self.create_node(parser, args, kwargs, target, tag_name=tag_name, lineno=lineno)
@@ -98,7 +98,7 @@ class BaseTemplateTag(Extension):
 
 class StandaloneTag(BaseTemplateTag):
     def create_node(self, parser, args, kwargs, target, tag_name, lineno):
-        call_node = self.call_method('render_wrapper', args, kwargs)
+        call_node = self.call_method('render_wrapper', args, kwargs, lineno=lineno)
         if target:
             target_node = nodes.Name(target, 'store', lineno=lineno)
             return nodes.Assign(target_node, call_node, lineno=lineno)
@@ -108,7 +108,7 @@ class StandaloneTag(BaseTemplateTag):
 
 class ContainerTag(BaseTemplateTag):
     def create_node(self, parser, args, kwargs, target, tag_name, lineno):
-        call_node = self.call_method('render_wrapper', args, kwargs)
+        call_node = self.call_method('render_wrapper', args, kwargs, lineno=lineno)
         body = parser.parse_statements(['name:end%s' % tag_name], drop_needle=True)
         call_block = nodes.CallBlock(call_node, [], [], body).set_lineno(lineno)
         if target:
