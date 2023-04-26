@@ -30,12 +30,21 @@ class TestNoEscape:
         template = self.env.from_string('{% trim %}  \t Rick & Morty\n {% endtrim %}')
         assert template.render({}) == 'Rick & Morty'
 
+    def test_standalone_assignment(self):
+        template = self.env.from_string('{% string as data %}{{ data }}')
+        assert template.render({}) == 'Rick & Morty'
+
+    def test_container_assignment(self):
+        template = self.env.from_string('{% trim as data %}  \t Rick & Morty\n {% endtrim %}{{ data }}')
+        assert template.render({}) == 'Rick & Morty'
+
 
 class TestAutoEscape:
     def setup_method(self):
         self.env = Environment(extensions=[StringTag, TrimContainer], autoescape=True)
 
     def test_standalone(self):
+        # TODO: should the output be escaped?
         template = self.env.from_string('{% string %}')
         assert template.render({}) == 'Rick & Morty'
 
@@ -44,7 +53,7 @@ class TestAutoEscape:
         assert template.render({}) == 'Rick & Morty'
 
     def test_standalone_assignment(self):
-        template = self.env.from_string('{% string as var %}{{ var }}')
+        template = self.env.from_string('{% string as data %}{{ data }}')
         assert template.render({}) == 'Rick &amp; Morty'
 
     def test_container_assignment(self):

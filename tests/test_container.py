@@ -9,20 +9,16 @@ class HashTag(ContainerTag):
     tags = {'hash'}
 
     def render(self, algorithm, caller=None):
-        if algorithm not in hashlib.algorithms_available:
-            raise ValueError('unknown algorithm: {}'.format(algorithm))
-
-        content = str(caller())
-        hasher = getattr(hashlib, algorithm)()
-        hasher.update(content.encode())
+        content = str(caller()).encode()
+        hasher = hashlib.new(algorithm, content)
         return hasher.hexdigest()
 
 
-class TestStringOutput:
+class TestContainerTag:
     def setup_method(self):
-        self.env = Environment(extensions=[HashTag], autoescape=True)
+        self.env = Environment(extensions=[HashTag])
 
-    def test_container(self):
+    def test_output(self):
         template = self.env.from_string('{% hash "sha1" %}test content{% endhash %}')
         assert template.render({}) == '1eebdf4fdc9fc7bf283031b93f9aef3338de9052'
 

@@ -17,7 +17,7 @@ class TestStandaloneTag:
     def setup_method(self):
         self.env = Environment(extensions=[NowTag])
 
-    def test_tag(self):
+    def test_output(self):
         template = self.env.from_string('{% now %}')
         assert template.render({}) == '08-07-2020'
 
