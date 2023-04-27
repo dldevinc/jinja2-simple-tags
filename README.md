@@ -1,6 +1,7 @@
 # jinja2-simple-tags
 
-Base classes for quick-and-easy template tag development
+`jinja2-simple-tags` is a library that provides a simple way to create custom template 
+tags in Jinja2 templates.
 
 [![PyPI](https://img.shields.io/pypi/v/jinja2-simple-tags.svg)](https://pypi.org/project/jinja2-simple-tags/)
 [![Build Status](https://travis-ci.com/dldevinc/jinja2-simple-tags.svg?branch=master)](https://travis-ci.org/dldevinc/jinja2-simple-tags)
@@ -14,102 +15,110 @@ Base classes for quick-and-easy template tag development
 
 `pip install jinja2-simple-tags`
 
-## Examples
+## Usage
+
+To use `jinja2-simple-tags`, you need to create a subclass of one of the provided 
+tag types and implement the `render` method.
 
 ### `StandaloneTag`
 
+`StandaloneTag` is a tag that doesn't require a closing tag. It can be used like this:
+
 ```python
-from django.utils.timezone import now
-from django.utils.formats import date_format
+from datetime import datetime
 from jinja2_simple_tags import StandaloneTag
 
 
 class NowExtension(StandaloneTag):
     tags = {"now"}
 
-    def render(self, format_string='DATETIME_FORMAT'):
-        return date_format(now(), format_string)
+    def render(self, format="%Y-%m-%d %H:%I:%S"):
+        return datetime.now().strftime(format)
 ```
-
-Usage:
 
 ```jinja2
-{% now %}           {# 7th July 2020, 10:07 a.m. #}
-{% now "Y-m-d" %}   {# 2020-07-07 #}
+{% now %}               {# 2023-04-27 20:08:03 #}
+{% now '%m/%d/%Y' %}    {# 04/27/2023 #}
 ```
+
+#### Escaping
+
+By default, the output of `StandaloneTag` will be escaped. To disable escaping,
+set the `safe_output` property of your tag to `True`:
+
+```python
+from jinja2_simple_tags import StandaloneTag
+
+
+class AlertExtension(StandaloneTag):
+    safe_output = True
+    tags = {"alert"}
+
+    def render(self, message):
+        return "<script>alert('{}')</script>".format(message)
+```
+
+You can also return a `jinja2.Markup` object from the `render()` method to explicitly 
+mark the output as safe.
 
 ### `ContainerTag`
 
+`ContainerTag` is a tag that requires a closing tag and can contain arbitrary content.
+It can be used like this:
+
 ```python
-from django.core.cache import cache
-from django.utils.encoding import force_str
-from django.core.cache.utils import make_template_fragment_key
+import hmac
 from jinja2_simple_tags import ContainerTag
 
 
-class CacheExtension(ContainerTag):
-    tags = {"cache"}
+class HMACExtension(ContainerTag):
+    tags = {"hmac"}
 
-    def render(self, fragment_name, *vary_on, timeout=None, caller=None):
-        cache_key = make_template_fragment_key(fragment_name, vary_on)
+    def render(self, secret, digest="sha256", caller=None):
+        content = str(caller()).encode()
 
-        value = cache.get(cache_key)
-        if value is None:
-            value = caller()
-            cache.set(cache_key, force_str(value), timeout)
-        else:
-            value = force_str(value)
+        if isinstance(secret, str):
+            secret = secret.encode()
 
-        return value
+        signing = hmac.new(secret, content, digestmod=digest)
+        return signing.hexdigest()
 ```
 
-Usage:
-
 ```jinja2
-{% cache "footer", request.path, timeout=3600 %}
-  <footer>
-    ...
-  </footer>
-{% endcache %}
+{% hmac 'SECRET', digest='sha1' %}Hello world!{% endhmac %}
+
+{# e29371e24dc99c5641681728855a92e26829e288 #}
 ```
 
 ### Context
 
-Current context is available through the `self.context`.
+Current context can be accessed using `self.context` attribute of the tag class:
 
 ```python
-from django.urls import reverse
 from jinja2_simple_tags import StandaloneTag
 
 
-class AbsoluteURITag(StandaloneTag):
-    tags = {'absolute_uri'}
+class UserNameExtension(StandaloneTag):
+    tags = {"username"}
 
-    def render(self, name):
-        request = self.context['request']
-        url = reverse(name)
-        return request.build_absolute_uri(url)
+    def render(self):
+        return self.context["user"].username
 ```
 
 ### Assignment
 
-Both `StandaloneTag` and `ContainerTag` comes with out-of-the-box
-support for assignment.
-
-Usage:
+In addition to returning the rendered value,  `ContainerTag` and `StandaloneTag`
+also supports assigning the output to a variable in the context. This can be done
+using the `as` keyword:
 
 ```jinja2
-{% now "Y-m-d" as today %}
+{% now '%m/%d/%Y' as today %}    
 ...
-{{ today }}       {# 2020-07-07 #}
+{{ today }}         {# 04/27/2023 #}
 ```
 
 ```jinja2
-{% cache "footer", request.path, timeout=3600 as footer %}
-  <footer>
-    ...
-  </footer>
-{% endcache %}
+{% hmac 'SECRET', digest='sha1' as signature %}Hello world!{% endhmac %}
 ...
-{{ footer }}
+{{ signature }}     {# e29371e24dc99c5641681728855a92e26829e288 #}
 ```
