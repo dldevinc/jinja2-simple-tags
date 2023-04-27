@@ -11,6 +11,7 @@ __version__ = '0.4.1'
 class BaseTemplateTag(Extension):
     def __init__(self, environment):
         super().__init__(environment)
+        self.context = None
         self.template = None
         self.lineno = None
         self.tag_name = None
