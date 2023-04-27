@@ -1,8 +1,11 @@
 import warnings
+from typing import Any, ClassVar, Dict, List, Tuple
 
 from jinja2 import nodes
-from jinja2.lexer import describe_token
 from jinja2.ext import Extension
+from jinja2.lexer import describe_token
+from jinja2.parser import Parser
+from jinja2.runtime import Context
 
 __all__ = ["StandaloneTag", "ContainerTag"]
 __version__ = "0.4.1"
@@ -16,7 +19,7 @@ class BaseTemplateTag(Extension):
         self.lineno = None
         self.tag_name = None
 
-    def parse(self, parser):
+    def parse(self, parser: Parser) -> nodes.Node:
         lineno = parser.stream.current.lineno
         tag_name = parser.stream.current.value
         additional_params = [
@@ -49,10 +52,13 @@ class BaseTemplateTag(Extension):
             **options
         )
 
-    def init_parser(self, parser):
+    def init_parser(self, parser: Parser):
         parser.stream.skip(1)  # skip tag name
 
-    def parse_args(self, parser):
+    def parse_args(
+        self,
+        parser: Parser
+    ) -> Tuple[List[nodes.Expr], List[nodes.Keyword], Dict[str, Any]]:
         args = []
         kwargs = []
         options = {
@@ -101,14 +107,30 @@ class BaseTemplateTag(Extension):
 
         return args, kwargs, options
 
-    def create_node(self, parser, args, kwargs, *, lineno, **options):
+    def create_node(
+        self,
+        parser: Parser,
+        args: List[nodes.Expr],
+        kwargs: List[nodes.Keyword],
+        *,
+        lineno: int,
+        **options
+    ) -> nodes.Node:
         raise NotImplementedError
 
 
 class StandaloneTag(BaseTemplateTag):
-    safe_output = False
+    safe_output: ClassVar[bool] = False
 
-    def create_node(self, parser, args, kwargs, *, lineno, **options):
+    def create_node(
+        self,
+        parser: Parser,
+        args: List[nodes.Expr],
+        kwargs: List[nodes.Keyword],
+        *,
+        lineno: int,
+        **options
+    ) -> nodes.Node:
         call_node = self.call_method("render_wrapper", args, kwargs, lineno=lineno)
         if self.safe_output:
             call_node = nodes.MarkSafeIfAutoescape(call_node, lineno=lineno)
@@ -120,10 +142,10 @@ class StandaloneTag(BaseTemplateTag):
         return nodes.Output([call_node], lineno=lineno)
 
     def render_wrapper(self, *args, **kwargs):
-        self.context = kwargs.pop("_context", None)
-        self.template = kwargs.pop("_template", None)
-        self.lineno = kwargs.pop("_lineno", None)
-        self.tag_name = kwargs.pop("_tag_name", None)
+        self.context: Context = kwargs.pop("_context")
+        self.template: str = kwargs.pop("_template")
+        self.lineno: int = kwargs.pop("_lineno")
+        self.tag_name: str = kwargs.pop("_tag_name")
         return self.render(*args, **kwargs)
 
     def render(self, *args, **kwargs):
@@ -131,9 +153,17 @@ class StandaloneTag(BaseTemplateTag):
 
 
 class ContainerTag(BaseTemplateTag):
-    def create_node(self, parser, args, kwargs, *, lineno, **options):
+    def create_node(
+        self,
+        parser: Parser,
+        args: List[nodes.Expr],
+        kwargs: List[nodes.Keyword],
+        *,
+        lineno: int,
+        **options
+    ) -> nodes.Node:
         call_node = self.call_method("render_wrapper", args, kwargs, lineno=lineno)
-        body = parser.parse_statements(["name:end%s" % options["tag_name"]], drop_needle=True)
+        body = parser.parse_statements(("name:end%s" % options["tag_name"],), drop_needle=True)
         call_block = nodes.CallBlock(call_node, [], [], body).set_lineno(lineno)
         if options["target"]:
             target_node = nodes.Name(options["target"], "store", lineno=lineno)
@@ -141,10 +171,10 @@ class ContainerTag(BaseTemplateTag):
         return call_block
 
     def render_wrapper(self, *args, **kwargs):
-        self.context = kwargs.pop("_context", None)
-        self.template = kwargs.pop("_template", None)
-        self.lineno = kwargs.pop("_lineno", None)
-        self.tag_name = kwargs.pop("_tag_name", None)
+        self.context: Context = kwargs.pop("_context")
+        self.template: str = kwargs.pop("_template")
+        self.lineno: int = kwargs.pop("_lineno")
+        self.tag_name: str = kwargs.pop("_tag_name")
         return self.render(*args, **kwargs)
 
     def render(self, *args, **kwargs):
