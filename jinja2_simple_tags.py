@@ -110,12 +110,12 @@ class StandaloneTag(BaseTemplateTag):
 
     def create_node(self, parser, args, kwargs, *, lineno, **options):
         call_node = self.call_method("render_wrapper", args, kwargs, lineno=lineno)
+        if self.safe_output:
+            call_node = nodes.MarkSafeIfAutoescape(call_node, lineno=lineno)
+
         if options["target"]:
             target_node = nodes.Name(options["target"], "store", lineno=lineno)
             return nodes.Assign(target_node, call_node, lineno=lineno)
-
-        if self.safe_output:
-            call_node = nodes.MarkSafeIfAutoescape(call_node, lineno=lineno)
 
         return nodes.Output([call_node], lineno=lineno)
 

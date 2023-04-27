@@ -80,7 +80,7 @@ class TestAutoEscape:
 
     def test_safe_standalone_assignment(self):
         template = self.env.from_string("{% safe_string as data %}{{ data }}")
-        assert template.render({}) == "Rick &amp; Morty"
+        assert template.render({}) == "Rick & Morty"
 
     def test_unsafe_standalone_assignment(self):
         template = self.env.from_string("{% unsafe_string as data %}{{ data }}")
