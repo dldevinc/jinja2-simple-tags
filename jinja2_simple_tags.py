@@ -104,6 +104,16 @@ class BaseTemplateTag(Extension):
     def create_node(self, parser, args, kwargs, *, lineno, **options):
         raise NotImplementedError
 
+
+class StandaloneTag(BaseTemplateTag):
+    def create_node(self, parser, args, kwargs, *, lineno, **options):
+        call_node = self.call_method('render_wrapper', args, kwargs, lineno=lineno)
+        if options["target"]:
+            target_node = nodes.Name(options["target"], 'store', lineno=lineno)
+            return nodes.Assign(target_node, call_node, lineno=lineno)
+        call = nodes.MarkSafe(call_node, lineno=lineno)
+        return nodes.Output([call], lineno=lineno)
+
     def render_wrapper(self, *args, **kwargs):
         self.context = kwargs.pop('_context', None)
         self.template = kwargs.pop('_template', None)
@@ -115,16 +125,6 @@ class BaseTemplateTag(Extension):
         raise NotImplementedError
 
 
-class StandaloneTag(BaseTemplateTag):
-    def create_node(self, parser, args, kwargs, *, lineno, **options):
-        call_node = self.call_method('render_wrapper', args, kwargs, lineno=lineno)
-        if options["target"]:
-            target_node = nodes.Name(options["target"], 'store', lineno=lineno)
-            return nodes.Assign(target_node, call_node, lineno=lineno)
-        call = nodes.MarkSafe(call_node, lineno=lineno)
-        return nodes.Output([call], lineno=lineno)
-
-
 class ContainerTag(BaseTemplateTag):
     def create_node(self, parser, args, kwargs, *, lineno, **options):
         call_node = self.call_method('render_wrapper', args, kwargs, lineno=lineno)
@@ -134,3 +134,13 @@ class ContainerTag(BaseTemplateTag):
             target_node = nodes.Name(options["target"], 'store', lineno=lineno)
             return nodes.AssignBlock(target_node, None, [call_block], lineno=lineno)
         return call_block
+
+    def render_wrapper(self, *args, **kwargs):
+        self.context = kwargs.pop('_context', None)
+        self.template = kwargs.pop('_template', None)
+        self.lineno = kwargs.pop('_lineno', None)
+        self.tag_name = kwargs.pop('_tag_name', None)
+        return self.render(*args, **kwargs)
+
+    def render(self, *args, **kwargs):
+        raise NotImplementedError
