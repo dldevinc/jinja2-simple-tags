@@ -25,9 +25,11 @@ class BaseTemplateTag(Extension):
             nodes.Keyword('_lineno', nodes.Const(lineno)),
             nodes.Keyword('_tag_name', nodes.Const(tag_name)),
         ]
+
         self.init_parser(parser)
-        args, kwargs, target = self.parse_args(parser)
+        args, kwargs, options = self.parse_args(parser)
         kwargs.extend(additional_params)
+        options.setdefault("tag_name", tag_name)
 
         if hasattr(self, "output") and callable(self.output):
             warnings.warn(
@@ -37,15 +39,14 @@ class BaseTemplateTag(Extension):
                 DeprecationWarning
             )
             call_node = self.call_method('render_wrapper', args, kwargs, lineno=lineno)
-            return self.output(parser, call_node, target, tag_name=tag_name, lineno=lineno)
+            return self.output(parser, call_node, lineno=lineno, **options)
 
         return self.create_node(
             parser,
             args,
             kwargs,
-            target=target,
-            tag_name=tag_name,
-            lineno=lineno
+            lineno=lineno,
+            **options
         )
 
     def init_parser(self, parser):
@@ -54,14 +55,16 @@ class BaseTemplateTag(Extension):
     def parse_args(self, parser):
         args = []
         kwargs = []
+        options = {
+            "target": None
+        }
         require_comma = False
         arguments_finished = False
-        target = None
 
         while parser.stream.current.type != 'block_end':
             if parser.stream.current.test('name:as'):
                 parser.stream.skip(1)
-                target = parser.stream.expect('name').value
+                options["target"] = parser.stream.expect('name').value
                 arguments_finished = True
 
             if arguments_finished:
@@ -96,9 +99,9 @@ class BaseTemplateTag(Extension):
 
             require_comma = True
 
-        return args, kwargs, target
+        return args, kwargs, options
 
-    def create_node(self, parser, args, kwargs, target, tag_name, lineno):
+    def create_node(self, parser, args, kwargs, *, lineno, **options):
         raise NotImplementedError
 
     def render_wrapper(self, *args, **kwargs):
@@ -113,21 +116,21 @@ class BaseTemplateTag(Extension):
 
 
 class StandaloneTag(BaseTemplateTag):
-    def create_node(self, parser, args, kwargs, target, tag_name, lineno):
+    def create_node(self, parser, args, kwargs, *, lineno, **options):
         call_node = self.call_method('render_wrapper', args, kwargs, lineno=lineno)
-        if target:
-            target_node = nodes.Name(target, 'store', lineno=lineno)
+        if options["target"]:
+            target_node = nodes.Name(options["target"], 'store', lineno=lineno)
             return nodes.Assign(target_node, call_node, lineno=lineno)
         call = nodes.MarkSafe(call_node, lineno=lineno)
         return nodes.Output([call], lineno=lineno)
 
 
 class ContainerTag(BaseTemplateTag):
-    def create_node(self, parser, args, kwargs, target, tag_name, lineno):
+    def create_node(self, parser, args, kwargs, *, lineno, **options):
         call_node = self.call_method('render_wrapper', args, kwargs, lineno=lineno)
-        body = parser.parse_statements(['name:end%s' % tag_name], drop_needle=True)
+        body = parser.parse_statements(['name:end%s' % options["tag_name"]], drop_needle=True)
         call_block = nodes.CallBlock(call_node, [], [], body).set_lineno(lineno)
-        if target:
-            target_node = nodes.Name(target, 'store', lineno=lineno)
+        if options["target"]:
+            target_node = nodes.Name(options["target"], 'store', lineno=lineno)
             return nodes.AssignBlock(target_node, None, [call_block], lineno=lineno)
         return call_block
