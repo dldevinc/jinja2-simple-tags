@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.5.0](https://github.com/dldevinc/jinja2-simple-tags/tree/v0.5.0) - 2023-04-27
+
+### ⚠ BREAKING CHANGES
+
+-   The output of `StandaloneTag` is now escaped by default when the `autoescape` 
+    environment option is set to `True`. This behavior can be changed using the new 
+    `safe_output` [property](README.md#Escaping). When `safe_output` is set to `True`, 
+    the output will not be escaped.
+-   The `BaseTemplateTag.output()` method has been deprecated and is no longer available.
+    Use the `BaseTemplateTag.create_node()` method instead.
+
 ## [0.4.1](https://github.com/dldevinc/jinja2-simple-tags/tree/v0.4.1) - 2022-11-28
 
 -   Add Python 3.11 support (no code changes were needed, but now we test this release).
