@@ -8,7 +8,7 @@ from jinja2.parser import Parser
 from jinja2.runtime import Context
 
 __all__ = ["StandaloneTag", "ContainerTag"]
-__version__ = "0.5.0-rc.1"
+__version__ = "0.5.0"
 
 
 class BaseTemplateTag(Extension):
