@@ -7,7 +7,7 @@ from jinja2.lexer import describe_token
 from jinja2.parser import Parser
 from jinja2.runtime import Context
 
-__all__ = ["StandaloneTag", "ContainerTag"]
+__all__ = ["StandaloneTag", "ContainerTag", "InclusionTag"]
 __version__ = "0.5.0"
 
 
@@ -179,3 +179,32 @@ class ContainerTag(BaseTemplateTag):
 
     def render(self, *args, **kwargs):
         raise NotImplementedError
+
+
+class InclusionTag(StandaloneTag):
+    template_name = None
+
+    def render(self, *args, **kwargs):
+        template_names = self.get_template_names(*args, **kwargs)
+        if isinstance(template_names, str):
+            template = self.environment.get_template(template_names)
+        else:
+            template = self.environment.select_template(template_names)
+
+        context = template.new_context(
+            dict(self.context.get_all(), **self.get_context(*args, **kwargs)),
+            shared=True
+        )
+        return template.render(context)
+
+    def get_context(self, *args, **kwargs):
+        return {}
+
+    def get_template_names(self, *args, **kwargs):
+        if self.template_name is None:
+            raise RuntimeError(
+                "InclusionTag requires either a definition of "
+                "'template_name' or an implementation of 'get_template_names()'"
+            )
+        else:
+            return self.template_name
