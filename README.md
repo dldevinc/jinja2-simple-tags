@@ -110,7 +110,7 @@ class IncludeHeader(InclusionTag):
 ```
 
 ```jinja2
-{% include_header "/static/logo.png" %}
+{% include_header logo="/static/logo.png" %}
 ```
 
 #### Context Inheritance
@@ -137,9 +137,9 @@ class UserNameExtension(StandaloneTag):
 
 ### Assignment
 
-In addition to returning the rendered value,  `ContainerTag` and `StandaloneTag`
-also supports assigning the output to a variable in the context. This can be done
-using the `as` keyword:
+In addition to returning the rendered value,  `ContainerTag`, `StandaloneTag` and 
+`InclusionTag` also supports assigning the output to a variable in the context. 
+This can be done using the `as` keyword:
 
 ```jinja2
 {% now '%m/%d/%Y' as today %}    
