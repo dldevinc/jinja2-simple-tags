@@ -1,5 +1,13 @@
 import pytest
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
+from jinja2_simple_tags import InclusionTag
+
+
+try:
+    from markupsafe import Markup
+except ImportError:
+    from jinja2 import Markup
+
 
 try:
     # Jinja2 >= 3.0
@@ -8,13 +16,11 @@ except ImportError:
     # Jinja2 < 3.0
     from jinja2 import contextfilter
 
-from jinja2_simple_tags import InclusionTag
-
 
 @contextfilter
 def themed(context, value):
     theme = context["theme"]
-    return "<div class=\"theme--{}\">{}</div>".format(theme, value)
+    return Markup("<div class=\"theme--{}\">{}</div>".format(theme, value))
 
 
 class UndefinedTemplateTag(InclusionTag):
@@ -84,7 +90,8 @@ class TestInclusionTag:
                 ButtonTag,
                 HeaderTag,
                 FooterTag
-            ]
+            ],
+            autoescape=True
         )
         self.env.filters["themed"] = themed
 
@@ -112,11 +119,11 @@ class TestInclusionTag:
 
     def test_assignment(self):
         # Tests the assignment of the result of an inclusion tag to a variable.
-        template = self.env.from_string((
+        template = self.env.from_string(
             "{% button 'Buy now' as buy_button %}"
             "Apple: $1.25 {{ buy_button }}\n"
             "Banana: $2.50 {{ buy_button }}"
-        ))
+        )
         assert template.render() == (
             "Apple: $1.25 <button>Buy now</button>\n"
             "Banana: $2.50 <button>Buy now</button>"
@@ -137,13 +144,13 @@ class TestInclusionTag:
     def test_context_pollution(self):
         # Test that variables set within an inclusion tag do not affect
         # the parent context.
-        template = self.env.from_string((
+        template = self.env.from_string(
             "Theme: {{ theme }}\n"
             "Logo: {{ logo }}\n"
             "{% header '/weekend.png' %}\n"
             "Theme: {{ theme }}\n"
             "Logo: {{ logo }}"
-        ))
+        )
         assert template.render({
             "theme": "weekend",
             "logo": "/original.png"
@@ -160,11 +167,11 @@ class TestInclusionTag:
     def test_filter_context_pollution(self):
         # In this test, we check whether the InclusionTag
         # does not pollute the active context.
-        template = self.env.from_string((
+        template = self.env.from_string(
             "{{ \"Before\"|themed }}\n"
             "{% footer 'christmas' %}\n"
             "{{ \"After\"|themed }}"
-        ))
+        )
         assert template.render({
             "theme": "default"
         }) == (

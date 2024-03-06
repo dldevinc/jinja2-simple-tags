@@ -8,7 +8,7 @@ from jinja2.parser import Parser
 from jinja2.runtime import Context
 
 __all__ = ["StandaloneTag", "ContainerTag", "InclusionTag"]
-__version__ = "0.6.0"
+__version__ = "0.6.1"
 
 
 class BaseTemplateTag(Extension):
@@ -183,6 +183,7 @@ class ContainerTag(BaseTemplateTag):
 
 class InclusionTag(StandaloneTag):
     template_name = None
+    safe_output = True
 
     def render(self, *args, **kwargs):
         template_names = self.get_template_names(*args, **kwargs)
