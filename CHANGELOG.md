@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.6.1](https://github.com/dldevinc/jinja2-simple-tags/tree/v0.6.1) - 2024-03-06
+
+### Bug Fixes
+
+-   Escaping is disabled by default for `InclusionTag`.
+
 ## [0.6.0](https://github.com/dldevinc/jinja2-simple-tags/tree/v0.6.0) - 2024-03-06
 
 -   Added `InclusionTag` (https://github.com/dldevinc/jinja2-simple-tags/issues/6).
