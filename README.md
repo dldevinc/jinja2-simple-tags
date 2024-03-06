@@ -90,6 +90,36 @@ class HMACExtension(ContainerTag):
 {# e29371e24dc99c5641681728855a92e26829e288 #}
 ```
 
+### `InclusionTag`
+
+`InclusionTag` is a tag that can be used for including other templates. 
+It allows you to specify a template name or implement the `get_template_names()` 
+method for dynamic template selection. Here's an example:
+
+```python
+from jinja2_simple_tags import InclusionTag
+
+class IncludeHeader(InclusionTag):
+    tags = {"include_header"}
+    template_name = "header.html"
+
+    def get_context(self, logo):
+        return {
+            "logo": logo
+        }
+```
+
+```jinja2
+{% include_header logo="/static/logo.png" %}
+```
+
+#### Context Inheritance
+
+`InclusionTag` inherits the current context from the parent template, which allows you 
+to access and use variables from the parent context within the included template. 
+Any additional context variables returned by the `get_context()` method are merged with 
+the inherited context.
+
 ### Context
 
 Current context can be accessed using `self.context` attribute of the tag class:
@@ -107,9 +137,9 @@ class UserNameExtension(StandaloneTag):
 
 ### Assignment
 
-In addition to returning the rendered value,  `ContainerTag` and `StandaloneTag`
-also supports assigning the output to a variable in the context. This can be done
-using the `as` keyword:
+In addition to returning the rendered value,  `ContainerTag`, `StandaloneTag` and 
+`InclusionTag` also supports assigning the output to a variable in the context. 
+This can be done using the `as` keyword:
 
 ```jinja2
 {% now '%m/%d/%Y' as today %}    

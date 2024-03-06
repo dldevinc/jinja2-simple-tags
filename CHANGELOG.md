@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.6.0](https://github.com/dldevinc/jinja2-simple-tags/tree/v0.6.0) - 2024-03-06
+
+-   Added `InclusionTag` (https://github.com/dldevinc/jinja2-simple-tags/issues/6).
+
 ## [0.5.0](https://github.com/dldevinc/jinja2-simple-tags/tree/v0.5.0) - 2023-04-27
 
 ### ⚠ BREAKING CHANGES
