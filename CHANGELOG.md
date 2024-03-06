@@ -3,6 +3,7 @@
 ## [0.6.0](https://github.com/dldevinc/jinja2-simple-tags/tree/v0.6.0) - 2024-03-06
 
 -   Added `InclusionTag` (https://github.com/dldevinc/jinja2-simple-tags/issues/6).
+-   Added CI testing against python 3.12.
 
 ## [0.5.0](https://github.com/dldevinc/jinja2-simple-tags/tree/v0.5.0) - 2023-04-27
 
