@@ -75,7 +75,7 @@ class HMACExtension(ContainerTag):
     tags = {"hmac"}
 
     def render(self, secret, digest="sha256", caller=None):
-        content = str(caller()).encode()
+        content = caller().encode()
 
         if isinstance(secret, str):
             secret = secret.encode()

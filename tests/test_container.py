@@ -9,7 +9,7 @@ class HashTag(ContainerTag):
     tags = {"hash"}
 
     def render(self, algorithm, caller=None):
-        content = str(caller()).encode()
+        content = caller().encode()
         hasher = hashlib.new(algorithm, content)
         return hasher.hexdigest()
 
